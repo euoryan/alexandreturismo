@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Slideshow</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: black;
+        }
+        
+        .slideshow {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: opacity 1.5s ease-in-out;
+        }
+        
+        .slide.active {
+            opacity: 1;
+        }
+        
+        .slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+    </style>
+</head>
+<body>
+    <div class="slideshow" id="slideshow">
+        <!-- As imagens serão inseridas aqui pelo JavaScript -->
+    </div>
+
+    <script>
+        // Função para ler todas as imagens da pasta 'fotos' com os nomes corretos
+        function carregarImagens() {
+            return [
+                './fotos/1.png',
+                './fotos/2.png',
+                './fotos/3.png',
+                './fotos/4.png',
+                './fotos/5.png',
+                // Adicione mais fotos conforme necessário
+            ];
+        }
+        
+        let slideAtual = 0;
+        const tempoExibicao = 60000; // 1 minuto em milissegundos
+        const imagens = carregarImagens();
+        
+        // Função para criar os slides
+        function criarSlides() {
+            const slideshow = document.getElementById('slideshow');
+            
+            imagens.forEach((img, index) => {
+                const slide = document.createElement('div');
+                slide.className = 'slide';
+                if (index === 0) slide.classList.add('active');
+                
+                const imagem = document.createElement('img');
+                imagem.src = img;
+                imagem.alt = '';
+                
+                // Adiciona tratamento de erro para imagens que não existem
+                imagem.onerror = function() {
+                    console.log('Imagem não encontrada: ' + img);
+                    this.style.display = 'none';
+                };
+                
+                slide.appendChild(imagem);
+                slideshow.appendChild(slide);
+            });
+        }
+        
+        // Função para avançar para o próximo slide
+        function proximoSlide() {
+            const slides = document.querySelectorAll('.slide');
+            if (slides.length === 0) return;
+            
+            slides[slideAtual].classList.remove('active');
+            slideAtual = (slideAtual + 1) % slides.length;
+            slides[slideAtual].classList.add('active');
+        }
+        
+        // Inicializar o slideshow em modo de tela cheia
+        window.onload = function() {
+            criarSlides();
+            setInterval(proximoSlide, tempoExibicao);
+            
+            // Entrar em modo de tela cheia quando possível
+            document.addEventListener('click', function() {
+                if (document.documentElement.requestFullscreen) {
+                    document.documentElement.requestFullscreen();
+                } else if (document.documentElement.mozRequestFullScreen) {
+                    document.documentElement.mozRequestFullScreen();
+                } else if (document.documentElement.webkitRequestFullscreen) {
+                    document.documentElement.webkitRequestFullscreen();
+                } else if (document.documentElement.msRequestFullscreen) {
+                    document.documentElement.msRequestFullscreen();
+                }
+            });
+        };
+    </script>
+</body>
+</html>
